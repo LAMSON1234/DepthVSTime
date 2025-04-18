@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>潛水深度遞減計算器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #0066cc;
+            text-align: center;
+        }
+        .input-section {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input {
+            padding: 8px;
+            width: 100px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0055aa;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .note {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>潛水深度遞減計算器</h1>
+    
+    <div class="input-section">
+        <label for="startDepth">輸入起始深度（米）:</label>
+        <input type="number" id="startDepth" min="0" value="0">
+        <button onclick="generateTable()">生成列表</button>
+    </div>
+    
+    <div id="result">
+        <table id="depthTable">
+            <thead>
+                <tr>
+                    <th>序號</th>
+                    <th>時間</th>
+                    <th>深度（米）</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- 表格內容將由JavaScript動態生成 -->
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="note">
+        <p>計算規則：每20秒遞減3米，時間以分鐘和秒數表示。</p>
+    </div>
+
+    <script>
+        function generateTable() {
+            const startDepth = parseInt(document.getElementById('startDepth').value);
+            const tableBody = document.getElementById('tableBody');
+            
+            // 清空現有表格內容
+            tableBody.innerHTML = '';
+            
+            // 檢查輸入是否有效
+            if (isNaN(startDepth) || startDepth < 0) {
+                alert('請輸入有效的起始深度（正數）');
+                return;
+            }
+            
+            let currentDepth = startDepth;
+            let totalSeconds = 0;
+            let rowNumber = 1;
+            
+            // 生成表格行，直到深度為0或負數
+            while (currentDepth >= 0) {
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                
+                // 創建新行
+                const row = document.createElement('tr');
+                
+                // 添加序號單元格
+                const numberCell = document.createElement('td');
+                numberCell.textContent = rowNumber;
+                row.appendChild(numberCell);
+                
+                // 添加時間單元格
+                const timeCell = document.createElement('td');
+                timeCell.textContent = `${minutes}分${seconds.toString().padStart(2, '0')}秒`;
+                row.appendChild(timeCell);
+                
+                // 添加深度單元格
+                const depthCell = document.createElement('td');
+                depthCell.textContent = currentDepth;
+                row.appendChild(depthCell);
+                
+                // 將行添加到表格中
+                tableBody.appendChild(row);
+                
+                // 更新變量以進行下一次迭代
+                currentDepth -= 3;
+                totalSeconds += 20;
+                rowNumber++;
+            }
+        }
+        
+        // 頁面加載時自動生成一次表格
+        window.onload = generateTable;
+    </script>
+</body>
+</html>
